@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culinary AI Studio | Advanced Recipe Generator & Kitchen Companion</title>
+    <meta name="description" content="An advanced conversational food intelligence hub, featuring dynamic recipe generation, nutrition calculation, ingredient pair matching, and voice-assisted cooking timers.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="nav-container">
+            <div class="logo" id="logo-home">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Culinary AI Studio
+            </div>
+            <nav class="nav-tabs" id="nav-tabs-container">
+                <div class="nav-tab active" data-target="recipes">Recipes</div>
+                <div class="nav-tab" data-target="ingredients">Ingredients</div>
+                <div class="nav-tab" data-target="occasions">Occasions</div>
+                <div class="nav-tab" data-target="cuisines">Cuisines</div>
+                <div class="nav-tab" data-target="tips">Tips & Tricks</div>
+                <div class="nav-tab" data-target="products">Products</div>
+                <div class="nav-tab" data-target="kitchen">In the Kitchen</div>
+                <div class="nav-tab" data-target="community">Community</div>
+                <div class="nav-tab" data-target="video">Video</div>
+                <div class="nav-tab" data-target="about">About Us</div>
+            </nav>
+            <div class="header-right">
+                <button class="btn-secondary" id="btn-dietary">Dietary Filters</button>
+                <button class="btn-primary" id="btn-magazine">Get the Magazine</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main>
+        <!-- Predictive dinner wizard -->
+        <section class="wizard-banner">
+            <div class="wizard-content">
+                <span class="wizard-badge" id="wizard-time-badge">Predictive ML Suggestion</span>
+                <h1 class="wizard-title" id="wizard-headline">Dinner tonight? Let our <span>culinary models</span> recommend.</h1>
+                <p class="wizard-desc">Evaluating your environment inputs, local conditions, and past tastes to present the ultimate recommended meal choice.</p>
+                <div class="wizard-widgets">
+                    <div class="wizard-widget-card">
+                        <span class="label">Weather Condition</span>
+                        <div class="value" id="val-weather">Sunny & Hot</div>
+                    </div>
+                    <div class="wizard-widget-card">
+                        <span class="label">Time Suggestion</span>
+                        <div class="value" id="val-time">Evening Meal</div>
+                    </div>
+                    <div class="wizard-widget-card">
+                        <span class="label">Dietary Mode</span>
+                        <div class="value" id="val-dietary">Standard</div>
+                    </div>
+                </div>
+                <button class="btn-primary" id="btn-predictive-action">Generate Match</button>
+            </div>
+        </section>
+
+        <!-- Dynamic Grid View -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Side Core Action Center -->
+            <div class="action-center">
+                
+                <!-- WHAT'S IN MY FRIDGE MODULE -->
+                <div class="module-card" style="margin-bottom: 2rem;">
+                    <h2 class="module-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Ingredient-Based Cooking ("What's in my Fridge?")
+                    </h2>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+                        Input ingredients you have available. Our model will compute exact recipe match configurations.
+                    </p>
+                    <div class="fridge-input-container" id="fridge-tags-wrapper">
+                        <!-- tags dynamically injected -->
+                        <input type="text" class="fridge-input" id="fridge-tag-input" placeholder="Type ingredient & press Enter (e.g. Tomato, Chicken)...">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.75rem; color: var(--text-secondary);" id="tag-helper-msg">0 ingredients added</span>
+                        <button class="btn-primary" id="btn-search-fridge">Run Match Algorithm</button>
+                    </div>
+                </div>
+
+                <!-- MAIN WORKSPACE SECTION ROUTER -->
+                
+                <!-- RECIPES SECTION -->
+                <section id="sec-recipes" class="content-section active">
+                    <div class="filters-row">
+                        <select class="select-custom" id="filter-cuisine">
+                            <option value="all">All Cuisines</option>
+                            <option value="italian">Italian</option>
+                            <option value="mexican">Mexican</option>
+                            <option value="japanese">Japanese</option>
+                            <option value="indian">Indian</option>
+                        </select>
+                        <select class="select-custom" id="filter-difficulty">
+                            <option value="all">All Difficulties</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                        <select class="select-custom" id="filter-time">
+                            <option value="all">All Times</option>
+                            <option value="15">Under 15 mins</option>
+                            <option value="30">Under 30 mins</option>
+                            <option value="60">Under 60 mins</option>
+                        </select>
+                        <input type="text" class="select-custom" id="search-recipe-input" placeholder="Search recipe..." style="flex-grow:1;">
+                    </div>
+                    <div class="recipes-grid" id="recipes-grid-container">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- INGREDIENTS SECTION -->
+                <section id="sec-ingredients" class="content-section">
+                    <h2 class="module-title">Culinary Flavor Pairings & Food Intelligence</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Explore how ingredients harmonize and optimal ways to store them to extend shelf-life.</p>
+                    <div class="pairings-grid" id="pairings-grid-container">
+                        <!-- Pairs injected by JS -->
+                    </div>
+                </section>
+
+                <!-- OCCASIONS SECTION -->
+                <section id="sec-occasions" class="content-section">
+                    <h2 class="module-title">Curated Menus & Dining Occasions</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Perfect combinations tailored for celebrations, romantic evenings, or rapid weeknight dining.</p>
+                    <div class="occasions-grid" id="occasions-grid-container">
+                        <!-- Occasions injected by JS -->
+                    </div>
+                </section>
+
+                <!-- CUISINES SECTION -->
+                <section id="sec-cuisines" class="content-section">
+                    <h2 class="module-title">Global Culinary Traditions</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">A deep dive into cultural contexts, authentic tools, and methods around the globe.</p>
+                    <div class="cuisines-grid" id="cuisines-grid-container">
+                        <!-- Cuisines injected by JS -->
+                    </div>
+                </section>
+
+                <!-- TIPS & TRICKS SECTION -->
+                <section id="sec-tips" class="content-section">
+                    <h2 class="module-title">Chef Secrets & Culinary Disasters Resolution</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Professional culinary hacks, knife techniques, and fixing common recipe mistakes.</p>
+                    <div class="tips-grid" id="tips-grid-container">
+                        <!-- Tips injected by JS -->
+                    </div>
+                </section>
+
+                <!-- PRODUCTS SECTION -->
+                <section id="sec-products" class="content-section">
+                    <h2 class="module-title">Kitchen Gadgets & Smart Shopping</h2>
+                    <div class="products-layout">
+                        <div class="grocery-list">
+                            <h3 style="margin-bottom:1rem; font-size:1.1rem;">Smart Grocery List</h3>
+                            <div id="grocery-items-container">
+                                <p style="color:var(--text-secondary); font-size:0.85rem;">Your list is empty. Add ingredients from any recipe details card!</p>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <h3 style="margin-bottom:1rem; font-size:1.1rem;">Recommended Tools & Gadgets</h3>
+                            <div style="display:flex; flex-direction:column; gap:1rem;" id="tools-container">
+                                <!-- Tools injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- IN THE KITCHEN SECTION -->
+                <section id="sec-kitchen" class="content-section">
+                    <h2 class="module-title">Interactive Kitchen Companion</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Set step-by-step smart timers and convert cooking units on the fly.</p>
+                    <div class="kitchen-tools">
+                        <div class="timer-box">
+                            <h3>Voice-Enabled Timer</h3>
+                            <div class="timer-display" id="timer-display-label">05:00</div>
+                            <div class="timer-controls">
+                                <button class="btn-primary" id="btn-timer-start">Start</button>
+                                <button class="btn-secondary" id="btn-timer-reset">Reset</button>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <h3>Measurement Converter</h3>
+                            <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+                                <input type="number" id="converter-value" class="select-custom" placeholder="Value (e.g. 1)" value="1">
+                                <div style="display:flex; gap:0.5rem;">
+                                    <select id="converter-from" class="select-custom" style="flex:1;">
+                                        <option value="cups">Cups</option>
+                                        <option value="tbsp">Tablespoons (tbsp)</option>
+                                        <option value="oz">Ounces (oz)</option>
+                                        <option value="grams">Grams</option>
+                                    </select>
+                                    <span style="display:flex; align-items:center;">to</span>
+                                    <select id="converter-to" class="select-custom" style="flex:1;">
+                                        <option value="ml">Milliliters (ml)</option>
+                                        <option value="grams">Grams</option>
+                                        <option value="tbsp">Tablespoons (tbsp)</option>
+                                    </select>
+                                </div>
+                                <button class="btn-primary" id="btn-run-conversion">Convert</button>
+                                <div id="conversion-result" style="font-weight:700; color:var(--accent-amber); text-align:center; margin-top:0.5rem;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- COMMUNITY SECTION -->
+                <section id="sec-community" class="content-section">
+                    <h2 class="module-title">News Community & Cooking Challenges</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Check what other creators are baking and check active kitchen competitions.</p>
+                    <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:1.5rem;">
+                        <div class="module-card">
+                            <h3>Active Cooking Challenges</h3>
+                            <div id="challenges-list" style="margin-top:1rem; display:flex; flex-direction:column; gap:1rem;">
+                                <!-- Challenges injected by JS -->
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <h3>Share Your Creation</h3>
+                            <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+                                <input type="text" id="community-title" class="select-custom" placeholder="Recipe title...">
+                                <textarea id="community-review" class="select-custom" placeholder="Write your review or upload description..." style="height:80px; resize:none;"></textarea>
+                                <button class="btn-primary" id="btn-post-community">Share to Community Board</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIDEO SECTION -->
+                <section id="sec-video" class="content-section">
+                    <h2 class="module-title">Video Masterclasses</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Watch chefs demonstrate absolute masterclasses of techniques.</p>
+                    <div class="video-grid" id="video-grid-container">
+                        <!-- Video cards injected by JS -->
+                    </div>
+                </section>
+
+                <!-- ABOUT US SECTION -->
+                <section id="sec-about" class="content-section">
+                    <h2 class="module-title">Our Brand Narrative</h2>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center;">
+                        <div>
+                            <p style="margin-bottom:1rem;">At <strong>Culinary AI Studio</strong>, we are merging data science engineering with world-class gastronomic expertise to build tools that expand culinary creativity.</p>
+                            <p style="color:var(--text-secondary);">Our recommendation algorithms utilize flavor profile models to pair items, prevent culinary failures, and recommend custom meals based on dynamic environmental variables.</p>
+                        </div>
+                        <div class="module-card" style="text-align:center;">
+                            <h3 style="font-family:var(--font-heading); font-size:2rem; margin-bottom:1rem;">The Magazine</h3>
+                            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:1.5rem;">Unlock the Monthly Digital Mockup containing 50+ fresh seasonal recipes, chef interviews, and visual guidelines.</p>
+                            <button class="btn-primary" id="btn-open-magazine-mock" style="margin: 0 auto;">Read Current Issue</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Right Side Sidebar: Nutritional Breakdown / Health Score details -->
+            <div class="sidebar">
+                <div class="module-card" style="position: sticky; top: 100px;">
+                    <h3 class="module-title" style="border-bottom: 1px solid var(--border-card); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M3 20h9M12 4V2M12 22v-2M12 8h9M3 8h9M12 14h9M3 14h9"/></svg>
+                        Macro & Nutritional Intelligence
+                    </h3>
+                    <div id="nutrition-active-state">
+                        <h4 id="nutri-recipe-title" style="color: var(--accent-orange); margin-bottom: 0.5rem; font-size: 1.1rem;">Select a recipe to view details</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;" id="nutri-recipe-desc">Select any recipe card or request the AI Assistant to generate one to compute nutritional stats.</p>
+                        
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <span>Calories</span>
+                            <span style="font-weight:700;" id="nutri-cal">-- kcal</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <span>Protein</span>
+                            <span style="font-weight:700;" id="nutri-protein">-- g</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <span>Carbs</span>
+                            <span style="font-weight:700;" id="nutri-carbs">-- g</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 1.5rem;">
+                            <span>Fats</span>
+                            <span style="font-weight:700;" id="nutri-fats">-- g</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                <span style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-secondary);">Health Rating Score</span>
+                                <span style="font-weight:800; color:var(--accent-green); font-size:1.2rem;" id="nutri-health-score">--</span>
+                            </div>
+                            <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow:hidden;">
+                                <div style="width: 0%; height: 100%; background: var(--accent-green); transition: var(--transition-smooth);" id="nutri-health-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FLOATING AI ASSISTANT PANEL -->
+    <div class="chat-widget minimized" id="ai-chat-widget">
+        <div class="chat-header" id="chat-header-trigger">
+            <div class="chat-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                AI Culinary Assistant
+            </div>
+            <div class="chat-actions">
+                <button class="chat-btn-icon" id="btn-chat-toggle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-messages-container">
+            <div class="chat-msg bot">
+                Bonjour! I am your AI Culinary Assistant. Ask me to generate any recipe, suggest ingredient substitutions, or search dietary-safe items!
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="chat-user-input" placeholder="Ask for a recipe, substitution, or query...">
+            <button class="chat-send" id="btn-chat-send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- DIETARY PREFERENCES MODAL -->
+    <div class="modal" id="dietary-preferences-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-dietary">×</button>
+            <h3 style="margin-bottom:1rem; font-size:1.3rem;">Set AI Dietary Preferences</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:1.5rem;">Configure the active dietary tags. The recommendation model will filter matches automatically.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" class="dietary-check" value="vegan"> Vegan / Plant-based
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" class="dietary-check" value="gluten-free"> Gluten-Free
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" class="dietary-check" value="keto"> Keto / Low-Carb
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" class="dietary-check" value="nut-free"> Nut Allergy Safe
+                </label>
+            </div>
+            <button class="btn-primary" id="btn-apply-dietary" style="width:100%; justify-content:center;">Apply Preferences</button>
+        </div>
+    </div>
+
+    <!-- RECIPE DETAILS MODAL -->
+    <div class="modal" id="recipe-details-modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" id="btn-close-recipe">×</button>
+            <div id="recipe-details-body">
+                <!-- Dynamically loaded details with interactive instructions -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-holder"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
