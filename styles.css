@@ -69,18 +69,21 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
+    gap: 1.5rem;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 800;
+    font-family: var(--font-heading);
     background: linear-gradient(135deg, var(--text-primary), var(--accent-orange));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .logo svg {
@@ -89,25 +92,23 @@ header {
 
 .nav-tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem;
     overflow-x: auto;
-    max-width: 70%;
+    flex-grow: 1;
     scrollbar-width: none;
+    padding: 0 1rem;
 }
 .nav-tabs::-webkit-scrollbar {
     display: none;
 }
 
 .nav-tab {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.25rem;
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 9999px;
-    border: 1px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 500;
+    position: relative;
     transition: var(--transition-smooth);
     cursor: pointer;
     white-space: nowrap;
@@ -115,14 +116,18 @@ header {
 
 .nav-tab:hover, .nav-tab.active {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--border-card);
 }
 
-.nav-tab.active {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.15), rgba(245, 158, 11, 0.05));
-    border-color: rgba(234, 88, 12, 0.3);
-    color: var(--accent-orange);
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--accent-orange);
+    border-radius: 4px;
 }
 
 .header-right {
@@ -179,10 +184,10 @@ main {
 
 /* Wizard Banner (Dinner Tonight) */
 .wizard-banner {
-    background: linear-gradient(135deg, rgba(22, 26, 33, 0.9), rgba(15, 17, 21, 0.95)), url('https://images.unsplash.com/photo-1543353071-10c8ba85a904?auto=format&fit=crop&w=1200&q=80');
+    background: linear-gradient(135deg, rgba(22, 26, 33, 0.75), rgba(15, 17, 21, 0.9)), url('https://images.unsplash.com/photo-1543353071-10c8ba85a904?auto=format&fit=crop&w=1200&q=80');
     background-size: cover;
     background-position: center;
-    background-blend-mode: overlay;
+    background-blend-mode: normal;
     border-radius: 20px;
     border: 1px solid var(--border-card);
     padding: 3rem;
@@ -190,15 +195,7 @@ main {
     overflow: hidden;
 }
 
-.wizard-banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--accent-terracotta), var(--accent-amber), var(--accent-green));
-}
+
 
 .wizard-content {
     max-width: 650px;
@@ -976,6 +973,74 @@ main {
     top: -20px;
     opacity: 0.8;
     animation: confettiFall 3s linear infinite;
+}
+
+/* Universal Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* Header & Navigation */
+    .nav-container {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .nav-tabs {
+        width: 100vw;
+        margin-left: -1rem; /* Negate container padding */
+        padding: 0 1rem;
+    }
+    
+    /* Hero Banner */
+    .wizard-banner {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .wizard-title {
+        font-size: 2.2rem;
+    }
+    
+    .wizard-desc {
+        font-size: 0.95rem;
+    }
+    
+    .wizard-widgets {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Main Layout */
+    main {
+        padding: 0 1rem;
+        margin: 1rem auto;
+    }
+    
+    .dashboard-grid {
+        gap: 1.5rem;
+    }
+    
+    /* Modules */
+    .module-card {
+        padding: 1.25rem;
+    }
+    
+    /* Modals */
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    /* Chat Widget */
+    .chat-widget {
+        width: 90vw;
+        right: 5vw;
+        bottom: 1rem;
+    }
 }
 
 /* Animations */

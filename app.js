@@ -10,7 +10,7 @@ const RECIPES_DB = [
         prepTime: 20,
         tags: ["Vegetarian", "Gluten-Free Option"],
         dietary: ["vegan-option", "nut-free"],
-        img: "https://images.unsplash.com/photo-1621996346565-e3bb69182a59?auto=format&fit=crop&w=500&q=80",
+        img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=500&q=80",
         description: "A rich, creamy pasta with sun-dried tomatoes, spinach, and Italian herbs cooked to perfection.",
         ingredients: [
             "200g Gluten-free or Standard Penne Pasta",
@@ -169,7 +169,7 @@ const CHALLENGES_DATA = [
 ];
 
 const VIDEOS_DATA = [
-    { title: "Mastering Pasta Dough", chef: "Chef Julia", duration: "12 mins", img: "https://images.unsplash.com/photo-1621996346565-e3bb69182a59?auto=format&fit=crop&w=500&q=80" },
+    { title: "Mastering Pasta Dough", chef: "Chef Julia", duration: "12 mins", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=500&q=80" },
     { title: "The Art of Searing Salmon", chef: "Chef Kenji", duration: "8 mins", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=500&q=80" }
 ];
 
@@ -365,13 +365,73 @@ function initFridgeModule() {
         }
     });
 
-    btnSearch.addEventListener("click", () => {
+    btnSearch.addEventListener("click", async () => {
         if (fridgeIngredients.length === 0) {
             alert("Please input some available ingredients first!");
             return;
         }
-        applyAllFilters();
-        document.getElementById("nav-tabs-container").querySelector("[data-target='recipes']").click();
+        
+        // Use Vercel serverless function to securely generate custom recipe
+        btnSearch.textContent = "Computing AI Match...";
+        btnSearch.disabled = true;
+        
+        try {
+            const prompt = `You are a culinary AI. Create a delicious recipe using these available ingredients: ${fridgeIngredients.join(", ")}. 
+            Consider these dietary restrictions if any: ${activeDietary.join(", ")}.
+            
+            You MUST return ONLY a raw JSON object (no markdown formatting, no backticks, just the JSON) matching exactly this structure:
+            {
+                "name": "Recipe Title",
+                "cuisine": "fusion",
+                "difficulty": "medium",
+                "prepTime": 25,
+                "tags": ["Tag1", "Tag2"],
+                "dietary": ["any matching from prompt"],
+                "description": "A 1-sentence appetizing description.",
+                "ingredients": ["ingredient 1 with amount", "ingredient 2 with amount"],
+                "substitutions": {"ingredient 1": "substitute"},
+                "instructions": ["Step 1", "Step 2", "Step 3"],
+                "nutrition": { "calories": 400, "protein": 20, "carbs": 30, "fats": 15, "healthScore": 90 }
+            }`;
+
+            const response = await fetch(`/api/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.7 }
+                })
+            });
+            
+            if (!response.ok) throw new Error("API Error");
+            const data = await response.json();
+            let rawJson = data.candidates[0].content.parts[0].text;
+            
+            // Clean up any markdown blocks if the model accidentally includes them
+            rawJson = rawJson.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            const newRecipe = JSON.parse(rawJson);
+            newRecipe.id = "gen_" + Date.now();
+            newRecipe.img = "https://images.unsplash.com/photo-1495195134817-aeb325a55b65?auto=format&fit=crop&w=500&q=80"; // standard chef placeholder
+            
+            // Add to database and show it!
+            RECIPES_DB.unshift(newRecipe);
+            applyAllFilters();
+            
+            // Navigate to recipes tab and open the modal
+            document.getElementById("nav-tabs-container").querySelector("[data-target='recipes']").click();
+            openRecipeDetailsModal(newRecipe);
+            updateNutritionSidebar(newRecipe);
+            
+        } catch (e) {
+            console.error(e);
+            alert("AI generation failed. Showing best offline matches instead.");
+            applyAllFilters();
+            document.getElementById("nav-tabs-container").querySelector("[data-target='recipes']").click();
+        } finally {
+            btnSearch.textContent = "Run Match Algorithm";
+            btnSearch.disabled = false;
+        }
     });
 }
 
@@ -734,7 +794,7 @@ function initChatbot() {
         widget.classList.toggle("minimized");
     });
 
-    function sendMessage() {
+    async function sendMessage() {
         const text = input.value.trim();
         if (text === "") return;
 
@@ -756,21 +816,58 @@ function initChatbot() {
         msgsContainer.appendChild(loader);
         msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-        // Simulate ML response parsing after brief delay
-        setTimeout(() => {
-            loader.remove();
-            const bMsg = document.createElement("div");
-            bMsg.className = "chat-msg bot";
-            bMsg.innerHTML = getMockAIResponse(text);
-            msgsContainer.appendChild(bMsg);
-            msgsContainer.scrollTop = msgsContainer.scrollHeight;
-        }, 1200);
+        // Fetch AI response
+        const reply = await getGeminiAIResponse(text);
+        
+        loader.remove();
+        const bMsg = document.createElement("div");
+        bMsg.className = "chat-msg bot";
+        bMsg.innerHTML = reply;
+        msgsContainer.appendChild(bMsg);
+        msgsContainer.scrollTop = msgsContainer.scrollHeight;
     }
 
     btnSend.addEventListener("click", sendMessage);
     input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") sendMessage();
     });
+}
+
+const aiCache = new Map();
+
+async function getGeminiAIResponse(input) {
+    // Efficient caching to prevent frequent API exhaustion
+    if (aiCache.has(input)) {
+        return aiCache.get(input);
+    }
+    
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: "You are a culinary AI assistant. Format your response with basic HTML tags if needed. Keep it brief. User says: " + input }]
+                }]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error("API Error: " + response.statusText);
+        }
+        
+        const data = await response.json();
+        const reply = data.candidates[0].content.parts[0].text.replace(/\n/g, "<br>");
+        
+        // Save to cache
+        aiCache.set(input, reply);
+        return reply;
+    } catch (e) {
+        console.error(e);
+        return `🤖 Error communicating with Gemini API. Returning mock response...<br><br>` + getMockAIResponse(input);
+    }
 }
 
 function getMockAIResponse(input) {
